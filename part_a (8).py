@@ -100,6 +100,27 @@ dt_probs = dt.predict_proba(X_test)[:, 1]
 
 
 rf_preds = rf_random.predict(X_test)
+
+
+from sklearn.inspection import permutation_importance
+import matplotlib.pyplot as plt
+
+default_importance = rf_random.best_estimator_.feature_importances_
+
+perm_importance = permutation_importance(rf_random, X_test, y_test, n_repeats=10, random_state=42)
+
+importance_df = pd.DataFrame({
+    'Feature': X.columns,
+    'Gini_Importance': default_importance,
+    'Permutation_Importance_Mean': perm_importance.importances_mean
+}).sort_values(by='Permutation_Importance_Mean', ascending=False)
+
+display(importance_df)
+
+importance_df.set_index('Feature').plot(kind='bar', figsize=(10, 5))
+plt.title('Comparison of Feature Importances')
+plt.ylabel('Score')
+plt.show()
 rf_probs = rf_random.predict_proba(X_test)[:, 1]
 
 metrics = {
